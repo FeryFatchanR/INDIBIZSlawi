@@ -1,9 +1,50 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+/* Kelas Tailwind dari whitelist builder (StyleTokens) ditulis literal di PHP. */
+@source '../../app/Builder/**/*.php';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/*
+ * Warna & font brand berasal dari Website Settings → disuntikkan sebagai CSS variable
+ * (--brand-*) di layout publik. Nilai di bawah hanya fallback.
+ */
+@theme inline {
+    --color-primary: var(--brand-primary, #102C57);
+    --color-secondary: var(--brand-secondary, #1769AA);
+    --color-accent: var(--brand-accent, #00B8D9);
+    --color-surface: var(--brand-surface, #F5F7FA);
+    --color-page: var(--brand-background, #FFFFFF);
+    --color-ink: var(--brand-text, #172B4D);
+    --font-sans: var(--brand-font-body, 'Inter'), ui-sans-serif, system-ui, sans-serif;
+    --font-display: var(--brand-font-heading, 'Plus Jakarta Sans'), ui-sans-serif, system-ui, sans-serif;
 }
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-page text-ink font-sans antialiased; }
+    h1, h2, h3, h4 { @apply font-display tracking-tight; }
+    [x-cloak] { display: none !important; }
+}
+
+@layer components {
+    .prose-brand { @apply prose prose-slate max-w-none prose-headings:font-display prose-a:text-secondary prose-a:font-semibold; }
+    .prose-invert-brand { @apply prose-invert prose-a:text-accent; }
+    .section-eyebrow { @apply mb-3 inline-block text-xs font-bold uppercase tracking-[0.18em] text-accent; }
+    .section-title { @apply text-3xl font-bold leading-tight md:text-4xl; }
+    .section-subtitle { @apply mt-4 text-base leading-relaxed opacity-80 md:text-lg; }
+    .form-input { @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm placeholder:text-slate-400 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30; }
+    .form-label { @apply mb-1.5 block text-sm font-medium text-ink; }
+}
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-marquee { animation: marquee 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .animate-marquee { animation: none; } }
+
+/* Mode canvas builder: penanda section yang dipilih/hover. */
+.builder-canvas [data-section-uuid] { position: relative; cursor: pointer; }
+.builder-canvas [data-section-uuid]:hover { outline: 2px dashed rgb(0 184 217 / 0.7); outline-offset: -2px; }
+.builder-canvas [data-section-uuid].is-selected { outline: 3px solid #00B8D9; outline-offset: -3px; }
+.builder-canvas [data-section-uuid].is-hidden-section { opacity: 0.35; }
+.builder-canvas [data-inline-edit]:focus { outline: 2px solid #1769AA; outline-offset: 2px; border-radius: 4px; }

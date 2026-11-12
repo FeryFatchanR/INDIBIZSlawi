@@ -86,6 +86,9 @@ class PageRenderer
             ] + $type->prepare($content, $design);
 
             $inner = view($type->view(), $data)->render();
+            if (! $editor && trim($inner) === '') {
+                return ''; // section tanpa data (mis. belum ada testimoni) tidak menyisakan ruang kosong
+            }
 
             return view('builder._wrapper', $data + ['inner' => $inner, 'classes' => $this->wrapperClasses($design, $responsive)])->render();
         } catch (Throwable $e) {

@@ -7,6 +7,7 @@ use App\Builder\SectionRegistry;
 use App\Builder\SectionValidator;
 use App\Models\User;
 use App\Policies\RolePolicy;
+use App\Support\CmsCache;
 use App\Support\Roles;
 use App\Support\SettingsRepository;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(SectionValidator::class);
         $this->app->scoped(PageRenderer::class);
         $this->app->scoped(SettingsRepository::class);
+        $this->app->scoped(\App\Support\NavigationRepository::class);
     }
 
     public function boot(): void
@@ -45,6 +47,17 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute((int) config('cms.leads.rate_limit_per_minute', 5))->by($request->ip()),
             Limit::perDay(50)->by($request->ip()),
         ]);
+
+        // Invalidasi cache konten publik setiap kali konten CMS berubah.
+        foreach ([\App\Models\Page::class, \App\Models\Product::class, \App\Models\ProductCategory::class,
+            \App\Models\ProductSpecification::class, \App\Models\ProductFaq::class, \App\Models\ProductGallery::class,
+            \App\Models\NavigationMenu::class, \App\Models\NavigationMenuItem::class, \App\Models\IndustrySolution::class,
+            \App\Models\Banner::class, \App\Models\Promotion::class, \App\Models\Testimonial::class, \App\Models\CaseStudy::class,
+            \App\Models\Partner::class, \App\Models\Statistic::class, \App\Models\Faq::class, \App\Models\MediaAsset::class,
+            \App\Models\GlobalSetting::class, \App\Models\Campaign::class] as $model) {
+            $model::saved(fn () => CmsCache::bump());
+            $model::deleted(fn () => CmsCache::bump());
+        }
 
         View::composer(['layouts.public', 'components.public.*', 'builder.*', 'public.*'], function ($view) {
             $view->with('settings', $this->app->make(SettingsRepository::class));
