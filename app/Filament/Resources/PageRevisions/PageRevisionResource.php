@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\PageRevisions;
 
 use App\Enums\RevisionKind;
-use App\Filament\Resources\Pages\PageResource;
 use App\Filament\Resources\PageRevisions\Pages\ListPageRevisions;
+use App\Filament\Resources\Pages\PageResource;
 use App\Models\PageRevision;
 use BackedEnum;
 use Filament\Actions\Action;

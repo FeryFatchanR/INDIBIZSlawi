@@ -18,6 +18,7 @@ use App\Filament\Resources\Leads\RelationManagers\NotesRelationManager;
 use App\Models\ActivityLog;
 use App\Models\Lead;
 use App\Models\User;
+use App\Support\Access;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -44,6 +45,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 use UnitEnum;
 
 class LeadResource extends Resource
@@ -135,7 +137,7 @@ class LeadResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $canViewAll = fn () => auth()->user()->can('leads.view_all');
+        $canViewAll = fn () => Access::can('leads.view_all');
 
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['product', 'assignee']))
@@ -166,11 +168,11 @@ class LeadResource extends Resource
                     ->query(fn (Builder $query, array $data) => $query
                         ->when($data['from'] ?? null, fn ($query, $d) => $query->whereDate('created_at', '>=', $d))
                         ->when($data['until'] ?? null, fn ($query, $d) => $query->whereDate('created_at', '<=', $d))),
-                TrashedFilter::make()->visible(fn () => auth()->user()->can('leads.delete')),
+                TrashedFilter::make()->visible(fn () => Access::can('leads.delete')),
             ])
             ->headerActions([
                 ExportAction::make()->label('Export Excel/CSV')->exporter(LeadExporter::class)
-                    ->authorize(fn () => auth()->user()->can('export', Lead::class))
+                    ->authorize(fn () => Access::can('export', Lead::class))
                     ->before(fn () => ActivityLog::record('leads.exported', null, 'Export data lead')),
             ])
             ->recordActions([
@@ -181,7 +183,7 @@ class LeadResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('bulk_assign')->label('Assign ke sales')->icon('heroicon-o-user-plus')
-                        ->authorize(fn () => auth()->user()->can('assign', Lead::class))
+                        ->authorize(fn () => Access::can('assign', Lead::class))
                         ->schema([self::assigneeSelect()])
                         ->action(function (Collection $records, array $data) {
                             $assignee = User::find($data['assigned_to']);
@@ -205,7 +207,7 @@ class LeadResource extends Resource
     public static function changeStatusAction(): Action
     {
         return Action::make('change_status')->label('Ubah status')->icon('heroicon-o-arrow-path-rounded-square')
-            ->authorize(fn (Lead $record) => auth()->user()->can('changeStatus', $record))
+            ->authorize(fn (Lead $record) => Access::can('changeStatus', $record))
             ->fillForm(fn (Lead $record) => ['status' => $record->status->value, 'follow_up_at' => $record->follow_up_at])
             ->schema([
                 Select::make('status')->label('Status baru')->options(LeadStatus::options())->required()->live(),
@@ -217,7 +219,7 @@ class LeadResource extends Resource
             ->action(function (Lead $record, array $data) {
                 app(ChangeLeadStatus::class)->execute(
                     $record, LeadStatus::from($data['status']), auth()->user(), $data['note'] ?? null, $data['lost_reason'] ?? null,
-                    filled($data['follow_up_at'] ?? null) ? \Illuminate\Support\Carbon::parse($data['follow_up_at']) : null,
+                    filled($data['follow_up_at'] ?? null) ? Carbon::parse($data['follow_up_at']) : null,
                 );
                 Notification::make()->title('Status lead diperbarui.')->success()->send();
             });
@@ -226,7 +228,7 @@ class LeadResource extends Resource
     public static function assignAction(): Action
     {
         return Action::make('assign')->label('Assign sales')->icon('heroicon-o-user-plus')
-            ->authorize(fn (Lead $record) => auth()->user()->can('assign', $record))
+            ->authorize(fn (Lead $record) => Access::can('assign', $record))
             ->fillForm(fn (Lead $record) => ['assigned_to' => $record->assigned_to])
             ->schema([self::assigneeSelect()])
             ->action(function (Lead $record, array $data) {
@@ -238,14 +240,14 @@ class LeadResource extends Resource
     public static function addNoteAction(): Action
     {
         return Action::make('add_note')->label('Tambah catatan')->icon('heroicon-o-chat-bubble-left-ellipsis')
-            ->authorize(fn (Lead $record) => auth()->user()->can('addNote', $record))
+            ->authorize(fn (Lead $record) => Access::can('addNote', $record))
             ->schema([
                 Textarea::make('body')->label('Catatan follow-up')->required()->maxLength(5000)->rows(4),
                 DateTimePicker::make('follow_up_at')->label('Jadwalkan follow-up'),
             ])
             ->action(function (Lead $record, array $data) {
                 app(AddLeadNote::class)->execute($record, auth()->user(), $data['body'],
-                    filled($data['follow_up_at'] ?? null) ? \Illuminate\Support\Carbon::parse($data['follow_up_at']) : null);
+                    filled($data['follow_up_at'] ?? null) ? Carbon::parse($data['follow_up_at']) : null);
                 Notification::make()->title('Catatan ditambahkan.')->success()->send();
             });
     }

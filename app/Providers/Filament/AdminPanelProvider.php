@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\Pages\PageResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -48,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Global Sections')
-                    ->url(fn (): string => \App\Filament\Resources\Pages\PageResource::getUrl('index', ['filters' => ['type' => ['value' => 'global']]]))
+                    ->url(fn (): string => PageResource::getUrl('index', ['filters' => ['type' => ['value' => 'global']]]))
                     ->icon(Heroicon::OutlinedSquare3Stack3d)->group('Website')->sort(2)
                     ->visible(fn (): bool => auth()->user()?->can('pages.view') ?? false),
                 NavigationItem::make('Lihat Website')

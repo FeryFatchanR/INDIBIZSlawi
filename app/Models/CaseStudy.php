@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Concerns\LogsActivity;
-use App\Models\Concerns\SanitizesRichText;
 use App\Models\Concerns\Orderable;
+use App\Models\Concerns\SanitizesRichText;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

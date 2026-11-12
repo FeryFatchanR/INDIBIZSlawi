@@ -10,13 +10,12 @@ use App\Builder\SectionRegistry;
 use App\Builder\Style\StyleTokens;
 use App\Exceptions\StaleDraftException;
 use App\Filament\Resources\Pages\PageResource;
-use App\Models\Page as PageModel;
+use App\Support\Access;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
@@ -66,7 +65,7 @@ class BuildPage extends Page
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
-        abort_unless(auth()->user()->can('build', $this->record), 403);
+        abort_unless(Access::can('build', $this->record), 403);
         $this->loadFromDatabase();
     }
 
@@ -81,7 +80,7 @@ class BuildPage extends Page
     }
 
     /* ----------------------------------------------------------------- */
-    /* Data untuk view                                                    */
+    /* Data untuk view */
     /* ----------------------------------------------------------------- */
 
     /** @return array<string, array<string, SectionType>> */
@@ -128,7 +127,7 @@ class BuildPage extends Page
     }
 
     /* ----------------------------------------------------------------- */
-    /* Property editor (Filament schema dinamis per tipe section)          */
+    /* Property editor (Filament schema dinamis per tipe section) */
     /* ----------------------------------------------------------------- */
 
     public function propertiesForm(Schema $schema): Schema
@@ -187,7 +186,7 @@ class BuildPage extends Page
     }
 
     /* ----------------------------------------------------------------- */
-    /* Aksi builder (semua dipanggil dari Alpine/Livewire)               */
+    /* Aksi builder (semua dipanggil dari Alpine/Livewire) */
     /* ----------------------------------------------------------------- */
 
     public function selectSection(?string $uuid): void
@@ -208,7 +207,7 @@ class BuildPage extends Page
             return;
         }
         $definition = $registry->get($type);
-        if ($definition->permission() && ! auth()->user()->can($definition->permission())) {
+        if ($definition->permission() && ! Access::can($definition->permission())) {
             Notification::make()->title('Anda tidak memiliki izin untuk komponen ini.')->danger()->send();
 
             return;
@@ -358,7 +357,7 @@ class BuildPage extends Page
     }
 
     /* ----------------------------------------------------------------- */
-    /* Header actions                                                     */
+    /* Header actions */
     /* ----------------------------------------------------------------- */
 
     protected function getHeaderActions(): array
@@ -382,7 +381,7 @@ class BuildPage extends Page
             Action::make('preview')->label('Preview')->icon('heroicon-o-eye')->color('gray')
                 ->url(fn () => route('pages.preview', $this->record), shouldOpenInNewTab: true),
             Action::make('publish')->label('Publish')->icon('heroicon-o-rocket-launch')->color('success')
-                ->visible(fn () => auth()->user()->can('publish', $this->record))
+                ->visible(fn () => Access::can('publish', $this->record))
                 ->requiresConfirmation()
                 ->modalDescription('Draft saat ini akan tampil di website publik. Versi sebelumnya tetap tersimpan di riwayat revisi.')
                 ->schema([TextInput::make('note')->label('Catatan (opsional)')->maxLength(200)])
@@ -400,7 +399,7 @@ class BuildPage extends Page
                 }),
             ActionGroup::make([
                 Action::make('unpublish')->label('Unpublish')->icon('heroicon-o-eye-slash')->color('warning')
-                    ->visible(fn () => $this->record->isPublished() && ! $this->record->isHome() && auth()->user()->can('publish', $this->record))
+                    ->visible(fn () => $this->record->isPublished() && ! $this->record->isHome() && Access::can('publish', $this->record))
                     ->requiresConfirmation()
                     ->action(function () {
                         $this->record = app(UnpublishPage::class)->execute($this->record, auth()->user());
@@ -415,12 +414,12 @@ class BuildPage extends Page
     }
 
     /* ----------------------------------------------------------------- */
-    /* Internal                                                           */
+    /* Internal */
     /* ----------------------------------------------------------------- */
 
     private function guard(): void
     {
-        abort_unless(auth()->user()->can('build', $this->record), 403);
+        abort_unless(Access::can('build', $this->record), 403);
         if ($this->stale) {
             throw new StaleDraftException;
         }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Statistics;
 
+use App\Builder\Style\Icons;
 use App\Filament\Resources\Statistics\Pages\ManageStatistics;
 use App\Filament\Support\FormFields;
 use App\Models\Statistic;
@@ -10,8 +11,13 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -34,10 +40,10 @@ class StatisticResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            \Filament\Forms\Components\TextInput::make('value')->label('Nilai')->required()->maxLength(40),
-            \Filament\Forms\Components\TextInput::make('suffix')->label('Akhiran (+, %, dll.)')->maxLength(20),
-            \Filament\Forms\Components\TextInput::make('label')->label('Label')->required()->maxLength(120),
-            \Filament\Forms\Components\Select::make('icon')->label('Ikon')->options(\App\Builder\Style\Icons::OPTIONS)->searchable(),
+            TextInput::make('value')->label('Nilai')->required()->maxLength(40),
+            TextInput::make('suffix')->label('Akhiran (+, %, dll.)')->maxLength(20),
+            TextInput::make('label')->label('Label')->required()->maxLength(120),
+            Select::make('icon')->label('Ikon')->options(Icons::OPTIONS)->searchable(),
             FormFields::visible(),
         ]);
     }
@@ -46,12 +52,12 @@ class StatisticResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('value')->label('Nilai')->formatStateUsing(fn ($record) => $record->value.($record->suffix ?? '')),
-                \Filament\Tables\Columns\TextColumn::make('label')->label('Label')->searchable(),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('value')->label('Nilai')->formatStateUsing(fn ($record) => $record->value.($record->suffix ?? '')),
+                TextColumn::make('label')->label('Label')->searchable(),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

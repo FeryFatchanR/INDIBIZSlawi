@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Roles\Pages;
 
 use App\Models\ActivityLog;
-use App\Support\Roles;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;

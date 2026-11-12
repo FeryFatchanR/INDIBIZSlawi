@@ -12,6 +12,7 @@ use App\Filament\Resources\Products\RelationManagers\GalleriesRelationManager;
 use App\Filament\Resources\Products\RelationManagers\SpecificationsRelationManager;
 use App\Filament\Support\FormFields;
 use App\Models\Product;
+use App\Support\MediaUsageTracker;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -23,11 +24,10 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -139,7 +139,7 @@ class ProductResource extends Resource
 
     public static function syncMediaUsage(Product $product): void
     {
-        \App\Support\MediaUsageTracker::sync($product, [
+        MediaUsageTracker::sync($product, [
             'featured_image_id' => $product->featured_image_id,
             'og_image_id' => $product->og_image_id,
             'gallery' => $product->galleries()->pluck('media_asset_id')->all(),

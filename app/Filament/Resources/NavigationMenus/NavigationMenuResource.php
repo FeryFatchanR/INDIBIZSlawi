@@ -7,7 +7,6 @@ use App\Filament\Resources\NavigationMenus\Pages\ListNavigationMenus;
 use App\Filament\Resources\NavigationMenus\RelationManagers\ItemsRelationManager;
 use App\Models\NavigationMenu;
 use BackedEnum;
-use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;

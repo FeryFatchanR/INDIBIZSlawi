@@ -10,8 +10,12 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -34,7 +38,7 @@ class PartnerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            \Filament\Forms\Components\TextInput::make('name')->label('Nama mitra / klien')->required()->maxLength(150),
+            TextInput::make('name')->label('Nama mitra / klien')->required()->maxLength(150),
             FormFields::url('url', 'Website (opsional)'),
             FormFields::media('logo_id', 'Logo'),
             FormFields::visible(),
@@ -45,12 +49,12 @@ class PartnerResource extends Resource
     {
         return $table->modifyQueryUsing(fn ($query) => $query->with('logo'))
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('url')->label('Website')->limit(40),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('name')->label('Nama')->searchable(),
+                TextColumn::make('url')->label('Website')->limit(40),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

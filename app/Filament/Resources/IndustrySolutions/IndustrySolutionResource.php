@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\IndustrySolutions;
 
+use App\Builder\Style\Icons;
 use App\Filament\Resources\IndustrySolutions\Pages\ManageIndustrySolutions;
 use App\Filament\Support\FormFields;
 use App\Models\IndustrySolution;
@@ -10,8 +11,14 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -36,11 +43,11 @@ class IndustrySolutionResource extends Resource
         return $schema->columns(2)->components([
             FormFields::titleWithSlug('name', 'Nama industri', 120),
             FormFields::slug('industry_solutions', 140),
-            \Filament\Forms\Components\Select::make('icon')->label('Ikon')->options(\App\Builder\Style\Icons::OPTIONS)->searchable(),
+            Select::make('icon')->label('Ikon')->options(Icons::OPTIONS)->searchable(),
             FormFields::media('image_id', 'Gambar'),
-            \Filament\Forms\Components\Textarea::make('short_description')->label('Deskripsi singkat')->maxLength(500)->rows(2)->columnSpanFull(),
-            \Filament\Forms\Components\RichEditor::make('description')->label('Deskripsi lengkap')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
-            \Filament\Forms\Components\Select::make('products')->label('Produk yang direkomendasikan')->relationship('products', 'name')->multiple()->preload()->columnSpanFull(),
+            Textarea::make('short_description')->label('Deskripsi singkat')->maxLength(500)->rows(2)->columnSpanFull(),
+            RichEditor::make('description')->label('Deskripsi lengkap')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
+            Select::make('products')->label('Produk yang direkomendasikan')->relationship('products', 'name')->multiple()->preload()->columnSpanFull(),
             ...FormFields::seoFields(),
             FormFields::visible(),
         ]);
@@ -50,12 +57,12 @@ class IndustrySolutionResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('products_count')->label('Produk')->counts('products'),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('name')->label('Nama')->searchable(),
+                TextColumn::make('products_count')->label('Produk')->counts('products'),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

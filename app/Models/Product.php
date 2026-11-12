@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, HasUuid, LogsActivity, SoftDeletes, SanitizesRichText;
+    use HasFactory, HasUuid, LogsActivity, SanitizesRichText, SoftDeletes;
 
     /** @var list<string> */
     protected array $richTextAttributes = ['description'];

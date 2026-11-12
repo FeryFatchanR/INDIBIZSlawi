@@ -36,6 +36,22 @@ class UserFactory extends Factory
     /**
      * Indicate that the model's email address should be unverified.
      */
+    public function configure(): static
+    {
+        return $this->afterMaking(fn (User $user) => $user->forceFill(['is_active' => $user->is_active ?? true]));
+    }
+
+    public function inactive(): static
+    {
+        return $this->afterMaking(fn (User $user) => $user->forceFill(['is_active' => false]));
+    }
+
+    /** User dengan role tertentu (role harus sudah di-seed). */
+    public function withRole(string $role): static
+    {
+        return $this->afterCreating(fn (User $user) => $user->assignRole($role));
+    }
+
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

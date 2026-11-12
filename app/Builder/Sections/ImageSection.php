@@ -4,6 +4,7 @@ namespace App\Builder\Sections;
 
 use App\Builder\Contracts\SectionType;
 use App\Builder\Fields;
+use App\Rules\SafeUrl;
 
 class ImageSection extends SectionType
 {
@@ -48,7 +49,7 @@ class ImageSection extends SectionType
             'image_id' => $this->mediaRule(),
             'alt' => ['nullable', 'string', 'max:200'],
             'caption' => ['nullable', 'string', 'max:300'],
-            'link_url' => ['nullable', 'string', 'max:2048', new \App\Rules\SafeUrl],
+            'link_url' => ['nullable', 'string', 'max:2048', new SafeUrl],
         ];
     }
 

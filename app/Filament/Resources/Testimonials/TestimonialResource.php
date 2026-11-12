@@ -10,8 +10,14 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -34,11 +40,11 @@ class TestimonialResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            \Filament\Forms\Components\TextInput::make('name')->label('Nama')->required()->maxLength(120),
-            \Filament\Forms\Components\TextInput::make('position')->label('Jabatan')->maxLength(120),
-            \Filament\Forms\Components\TextInput::make('company')->label('Perusahaan')->maxLength(150),
-            \Filament\Forms\Components\Select::make('rating')->label('Rating')->options([5 => '★★★★★', 4 => '★★★★', 3 => '★★★', 2 => '★★', 1 => '★']),
-            \Filament\Forms\Components\Textarea::make('quote')->label('Testimoni')->required()->maxLength(2000)->rows(4)->columnSpanFull()->helperText('Pastikan testimoni asli dan sudah mendapat izin pelanggan.'),
+            TextInput::make('name')->label('Nama')->required()->maxLength(120),
+            TextInput::make('position')->label('Jabatan')->maxLength(120),
+            TextInput::make('company')->label('Perusahaan')->maxLength(150),
+            Select::make('rating')->label('Rating')->options([5 => '★★★★★', 4 => '★★★★', 3 => '★★★', 2 => '★★', 1 => '★']),
+            Textarea::make('quote')->label('Testimoni')->required()->maxLength(2000)->rows(4)->columnSpanFull()->helperText('Pastikan testimoni asli dan sudah mendapat izin pelanggan.'),
             FormFields::media('photo_id', 'Foto'),
             FormFields::visible(),
         ]);
@@ -48,13 +54,13 @@ class TestimonialResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('company')->label('Perusahaan')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('rating')->label('Rating'),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('name')->label('Nama')->searchable(),
+                TextColumn::make('company')->label('Perusahaan')->searchable(),
+                TextColumn::make('rating')->label('Rating'),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

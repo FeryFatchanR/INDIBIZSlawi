@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\LeadStatus;
 use App\Models\Lead;
+use App\Support\Access;
 use Filament\Widgets\ChartWidget;
 
 class LeadsByStatusChart extends ChartWidget
@@ -14,7 +15,7 @@ class LeadsByStatusChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->can('viewAny', Lead::class);
+        return Access::can('viewAny', Lead::class);
     }
 
     protected function getData(): array

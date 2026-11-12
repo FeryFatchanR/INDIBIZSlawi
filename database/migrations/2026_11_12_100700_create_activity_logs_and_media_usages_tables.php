@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('media_asset_id')->constrained('media_assets')->restrictOnDelete();
             $table->morphs('usable');
             $table->string('field', 80);
-            $table->unique(['media_asset_id', 'usable_type', 'usable_id', 'field']);
+            $table->unique(['media_asset_id', 'usable_type', 'usable_id', 'field'], 'media_usages_unique');
         });
     }
 

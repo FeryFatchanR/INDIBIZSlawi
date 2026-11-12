@@ -6,7 +6,6 @@ use App\Actions\Cms\PublishPage;
 use App\Actions\Cms\UnpublishPage;
 use App\Enums\PageStatus;
 use App\Enums\PageType;
-use App\Exceptions\StaleDraftException;
 use App\Filament\Resources\Pages\Pages\BuildPage;
 use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\Pages\Pages\EditPage;
@@ -14,6 +13,7 @@ use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Filament\Resources\Pages\RelationManagers\RevisionsRelationManager;
 use App\Filament\Support\FormFields;
 use App\Models\Page;
+use App\Support\Access;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -90,7 +90,9 @@ class PageResource extends Resource
                 TextColumn::make('type')->label('Tipe')->badge()->formatStateUsing(fn (PageType $state) => $state->label()),
                 TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn (PageStatus $state) => $state->label())
-                    ->color(fn (PageStatus $state) => match ($state) { PageStatus::Published => 'success', PageStatus::Draft => 'gray', PageStatus::Unpublished => 'warning' }),
+                    ->color(fn (PageStatus $state) => match ($state) {
+                        PageStatus::Published => 'success', PageStatus::Draft => 'gray', PageStatus::Unpublished => 'warning'
+                    }),
                 IconColumn::make('pending')->label('Draft belum terbit')->boolean()
                     ->state(fn (Page $r) => $r->hasUnpublishedChanges())
                     ->trueIcon('heroicon-o-exclamation-circle')->trueColor('warning')->falseIcon('heroicon-o-check-circle')->falseColor('success'),
@@ -106,7 +108,7 @@ class PageResource extends Resource
             ->recordActions([
                 Action::make('builder')->label('Builder')->icon('heroicon-o-paint-brush')->color('primary')
                     ->url(fn (Page $r) => self::getUrl('build', ['record' => $r]))
-                    ->visible(fn (Page $r) => auth()->user()->can('build', $r)),
+                    ->visible(fn (Page $r) => Access::can('build', $r)),
                 ActionGroup::make([
                     self::previewAction(),
                     self::publishAction(),
@@ -126,7 +128,7 @@ class PageResource extends Resource
     {
         return Action::make('preview')->label('Preview draft')->icon('heroicon-o-eye')
             ->url(fn (Page $record) => route('pages.preview', $record), shouldOpenInNewTab: true)
-            ->visible(fn (Page $record) => auth()->user()->can('preview', $record));
+            ->visible(fn (Page $record) => Access::can('preview', $record));
     }
 
     public static function publishAction(): Action
@@ -134,7 +136,7 @@ class PageResource extends Resource
         return Action::make('publish')->label('Publish')->icon('heroicon-o-rocket-launch')->color('success')
             ->requiresConfirmation()
             ->modalDescription('Draft saat ini akan menggantikan versi publik. Versi publik sebelumnya tetap tersimpan di riwayat revisi.')
-            ->visible(fn (Page $record) => auth()->user()->can('publish', $record))
+            ->visible(fn (Page $record) => Access::can('publish', $record))
             ->action(function (Page $record) {
                 try {
                     app(PublishPage::class)->execute($record, null, auth()->user());
@@ -149,7 +151,7 @@ class PageResource extends Resource
     {
         return Action::make('unpublish')->label('Unpublish')->icon('heroicon-o-eye-slash')->color('warning')
             ->requiresConfirmation()
-            ->visible(fn (Page $record) => $record->isPublished() && ! $record->isHome() && auth()->user()->can('publish', $record))
+            ->visible(fn (Page $record) => $record->isPublished() && ! $record->isHome() && Access::can('publish', $record))
             ->action(function (Page $record) {
                 app(UnpublishPage::class)->execute($record, auth()->user());
                 Notification::make()->title('Halaman tidak lagi tampil di website.')->success()->send();

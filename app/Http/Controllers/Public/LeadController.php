@@ -6,13 +6,15 @@ use App\Actions\Crm\CreateLead;
 use App\Enums\LeadSource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeadRequest;
-use App\Notifications\NewLeadNotification;
+use App\Models\Lead;
 use App\Models\User;
+use App\Notifications\NewLeadNotification;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Permission;
 
 class LeadController extends Controller
 {
@@ -33,12 +35,25 @@ class LeadController extends Controller
             $request->ip(),
         );
 
-        $recipients = User::permission('leads.view_all')->where('is_active', true)->get();
-        if ($recipients->isNotEmpty()) {
-            Notification::send($recipients, new NewLeadNotification($lead));
-        }
+        $this->notifyAdmins($lead);
 
         return back()->with('lead_success', true)->withFragment('lead-form');
+    }
+
+    /** Notifikasi bersifat best-effort: kegagalan tidak boleh menggagalkan penyimpanan lead. */
+    private function notifyAdmins(Lead $lead): void
+    {
+        try {
+            if (! Permission::query()->where('name', 'leads.view_all')->exists()) {
+                return;
+            }
+            $recipients = User::permission('leads.view_all')->where('is_active', true)->get();
+            if ($recipients->isNotEmpty()) {
+                Notification::send($recipients, new NewLeadNotification($lead));
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     private function looksLikeBot(string $token): bool

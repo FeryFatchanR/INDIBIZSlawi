@@ -10,8 +10,15 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -36,12 +43,12 @@ class CaseStudyResource extends Resource
         return $schema->columns(2)->components([
             FormFields::titleWithSlug('title', 'Judul', 180),
             FormFields::slug('case_studies', 190),
-            \Filament\Forms\Components\TextInput::make('client_name')->label('Nama klien')->required()->maxLength(150),
-            \Filament\Forms\Components\Select::make('industry_solution_id')->label('Industri')->relationship('industrySolution', 'name')->searchable()->preload(),
-            \Filament\Forms\Components\Textarea::make('summary')->label('Ringkasan')->maxLength(500)->rows(2)->columnSpanFull(),
-            \Filament\Forms\Components\RichEditor::make('challenge')->label('Tantangan')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
-            \Filament\Forms\Components\RichEditor::make('solution')->label('Solusi')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
-            \Filament\Forms\Components\RichEditor::make('result')->label('Hasil')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
+            TextInput::make('client_name')->label('Nama klien')->required()->maxLength(150),
+            Select::make('industry_solution_id')->label('Industri')->relationship('industrySolution', 'name')->searchable()->preload(),
+            Textarea::make('summary')->label('Ringkasan')->maxLength(500)->rows(2)->columnSpanFull(),
+            RichEditor::make('challenge')->label('Tantangan')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
+            RichEditor::make('solution')->label('Solusi')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
+            RichEditor::make('result')->label('Hasil')->columnSpanFull()->toolbarButtons([['bold', 'italic', 'underline', 'link'], ['h2', 'h3'], ['bulletList', 'orderedList', 'blockquote'], ['undo', 'redo']]),
             FormFields::media('image_id', 'Gambar utama'),
             ...FormFields::seoFields(),
             FormFields::visible(),
@@ -52,13 +59,13 @@ class CaseStudyResource extends Resource
     {
         return $table->modifyQueryUsing(fn ($query) => $query->with('industrySolution'))
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('title')->label('Judul')->searchable()->limit(50),
-                \Filament\Tables\Columns\TextColumn::make('client_name')->label('Klien')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('industrySolution.name')->label('Industri'),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('title')->label('Judul')->searchable()->limit(50),
+                TextColumn::make('client_name')->label('Klien')->searchable(),
+                TextColumn::make('industrySolution.name')->label('Industri'),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

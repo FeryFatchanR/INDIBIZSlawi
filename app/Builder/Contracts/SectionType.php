@@ -4,6 +4,7 @@ namespace App\Builder\Contracts;
 
 use App\Builder\Style\StyleTokens;
 use App\Rules\SafeUrl;
+use Filament\Support\Components\Component;
 
 /**
  * Definisi satu tipe section builder. Setiap tipe menentukan sendiri skema konten, aturan
@@ -21,7 +22,7 @@ abstract class SectionType
     /** @return array<string, mixed> aturan validasi Laravel relatif terhadap `content` */
     abstract public function contentRules(): array;
 
-    /** @return array<int, \Filament\Support\Components\Component> field editor untuk `content` */
+    /** @return array<int, Component> field editor untuk `content` */
     abstract public function contentFields(): array;
 
     public function category(): string
@@ -79,7 +80,7 @@ abstract class SectionType
         return [];
     }
 
-    /** @return array<int, \Filament\Support\Components\Component> field desain tambahan khusus tipe */
+    /** @return array<int, Component> field desain tambahan khusus tipe */
     public function designFields(): array
     {
         return [];

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_visible')->default(true);
             $table->timestamps();
-            $table->index(['navigation_menu_id', 'parent_id', 'sort_order']);
+            $table->index(['navigation_menu_id', 'parent_id', 'sort_order'], 'nav_items_menu_parent_sort_idx');
         });
     }
 

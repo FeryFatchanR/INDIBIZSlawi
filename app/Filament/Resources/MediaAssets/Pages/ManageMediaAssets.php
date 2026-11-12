@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\MediaAssets\Pages;
 
 use App\Filament\Resources\MediaAssets\MediaAssetResource;
+use App\Models\MediaAsset;
+use App\Support\Access;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,11 +19,11 @@ class ManageMediaAssets extends ManageRecords
     {
         return [
             Action::make('upload')->label('Upload media')->icon('heroicon-o-arrow-up-tray')
-                ->authorize(fn () => auth()->user()->can('media.create'))
+                ->authorize(fn () => Access::can('media.create'))
                 ->schema([
                     MediaAssetResource::uploadField(),
                     Select::make('folder_id')->label('Folder')->relationship('folder', 'name', fn ($query) => $query)->searchable()->preload()
-                        ->model(\App\Models\MediaAsset::class),
+                        ->model(MediaAsset::class),
                     TextInput::make('alt')->label('Alt text')->maxLength(255),
                 ])
                 ->action(function (array $data) {

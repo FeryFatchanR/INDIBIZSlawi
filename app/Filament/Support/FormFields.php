@@ -4,6 +4,7 @@ namespace App\Filament\Support;
 
 use App\Builder\Fields;
 use App\Rules\SafeUrl;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Set;
@@ -54,7 +55,7 @@ final class FormFields
     {
         return [
             TextInput::make('meta_title')->label('Meta title')->maxLength(70)->helperText('Kosongkan untuk memakai judul. Ideal ≤ 60 karakter.'),
-            \Filament\Forms\Components\Textarea::make('meta_description')->label('Meta description')->maxLength(320)->rows(2)
+            Textarea::make('meta_description')->label('Meta description')->maxLength(320)->rows(2)
                 ->helperText('Ringkasan untuk mesin pencari, ideal 120–160 karakter.'),
         ];
     }

@@ -10,8 +10,15 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -36,14 +43,14 @@ class CampaignResource extends Resource
         return $schema->columns(2)->components([
             FormFields::titleWithSlug('name', 'Nama kampanye'),
             FormFields::slug('campaigns'),
-            \Filament\Forms\Components\TextInput::make('utm_source')->label('utm_source')->maxLength(100)->alphaDash(),
-            \Filament\Forms\Components\TextInput::make('utm_medium')->label('utm_medium')->maxLength(100)->alphaDash(),
-            \Filament\Forms\Components\TextInput::make('utm_campaign')->label('utm_campaign')->maxLength(100)->alphaDash()->helperText('Lead dengan utm_campaign ini otomatis terhubung ke kampanye.'),
-            \Filament\Forms\Components\Textarea::make('whatsapp_message')->label('Pesan WhatsApp otomatis')->maxLength(500)->rows(2)->helperText('Dipakai tombol WhatsApp dengan parameter ?campaign=slug.'),
-            \Filament\Forms\Components\Textarea::make('description')->label('Catatan')->maxLength(2000)->rows(2)->columnSpanFull(),
-            \Filament\Forms\Components\DateTimePicker::make('starts_at')->label('Mulai tayang'),
-            \Filament\Forms\Components\DateTimePicker::make('ends_at')->label('Selesai tayang')->afterOrEqual('starts_at'),
-            \Filament\Forms\Components\Toggle::make('is_active')->label('Aktif')->default(true),
+            TextInput::make('utm_source')->label('utm_source')->maxLength(100)->alphaDash(),
+            TextInput::make('utm_medium')->label('utm_medium')->maxLength(100)->alphaDash(),
+            TextInput::make('utm_campaign')->label('utm_campaign')->maxLength(100)->alphaDash()->helperText('Lead dengan utm_campaign ini otomatis terhubung ke kampanye.'),
+            Textarea::make('whatsapp_message')->label('Pesan WhatsApp otomatis')->maxLength(500)->rows(2)->helperText('Dipakai tombol WhatsApp dengan parameter ?campaign=slug.'),
+            Textarea::make('description')->label('Catatan')->maxLength(2000)->rows(2)->columnSpanFull(),
+            DateTimePicker::make('starts_at')->label('Mulai tayang'),
+            DateTimePicker::make('ends_at')->label('Selesai tayang')->afterOrEqual('starts_at'),
+            Toggle::make('is_active')->label('Aktif')->default(true),
         ]);
     }
 
@@ -51,16 +58,16 @@ class CampaignResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('utm_campaign')->label('utm_campaign')->toggleable(),
-                \Filament\Tables\Columns\TextColumn::make('leads_count')->label('Lead')->counts('leads')->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('whatsapp_clicks_count')->label('Klik WA')->counts('whatsappClicks')->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('starts_at')->label('Mulai')->date()->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('ends_at')->label('Selesai')->date()->sortable(),
-                \Filament\Tables\Columns\ToggleColumn::make('is_active')->label('Aktif'),
+                TextColumn::make('name')->label('Nama')->searchable(),
+                TextColumn::make('utm_campaign')->label('utm_campaign')->toggleable(),
+                TextColumn::make('leads_count')->label('Lead')->counts('leads')->sortable(),
+                TextColumn::make('whatsapp_clicks_count')->label('Klik WA')->counts('whatsappClicks')->sortable(),
+                TextColumn::make('starts_at')->label('Mulai')->date()->sortable(),
+                TextColumn::make('ends_at')->label('Selesai')->date()->sortable(),
+                ToggleColumn::make('is_active')->label('Aktif'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_active')->label('Aktif'),
+                TernaryFilter::make('is_active')->label('Aktif'),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

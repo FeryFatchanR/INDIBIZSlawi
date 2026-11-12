@@ -5,9 +5,29 @@ namespace App\Providers;
 use App\Builder\Rendering\PageRenderer;
 use App\Builder\SectionRegistry;
 use App\Builder\SectionValidator;
+use App\Models\Banner;
+use App\Models\Campaign;
+use App\Models\CaseStudy;
+use App\Models\Faq;
+use App\Models\GlobalSetting;
+use App\Models\IndustrySolution;
+use App\Models\MediaAsset;
+use App\Models\NavigationMenu;
+use App\Models\NavigationMenuItem;
+use App\Models\Page;
+use App\Models\Partner;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\ProductFaq;
+use App\Models\ProductGallery;
+use App\Models\ProductSpecification;
+use App\Models\Promotion;
+use App\Models\Statistic;
+use App\Models\Testimonial;
 use App\Models\User;
 use App\Policies\RolePolicy;
 use App\Support\CmsCache;
+use App\Support\NavigationRepository;
 use App\Support\Roles;
 use App\Support\SettingsRepository;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -28,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(SectionValidator::class);
         $this->app->scoped(PageRenderer::class);
         $this->app->scoped(SettingsRepository::class);
-        $this->app->scoped(\App\Support\NavigationRepository::class);
+        $this->app->scoped(NavigationRepository::class);
     }
 
     public function boot(): void
@@ -39,8 +59,10 @@ class AppServiceProvider extends ServiceProvider
             Log::debug('Lazy loading terdeteksi.', ['model' => $model::class, 'relation' => $relation]);
         });
 
-        // Super Admin memiliki seluruh ability.
-        Gate::before(fn (User $user) => $user->hasRole(Roles::SUPER_ADMIN) ? true : null);
+        // Super Admin otomatis lolos untuk permission "resource.ability". Method policy (view, delete, ...)
+        // TETAP dijalankan agar invarian berlaku untuk semua orang: tidak bisa menghapus diri sendiri /
+        // super admin terakhir, homepage tidak bisa dihapus, media terpakai tidak bisa dihapus, dst.
+        Gate::before(fn (User $user, string $ability) => str_contains($ability, '.') && $user->hasRole(Roles::SUPER_ADMIN) ? true : null);
         Gate::policy(Role::class, RolePolicy::class);
 
         RateLimiter::for('leads', fn (Request $request) => [
@@ -49,12 +71,12 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         // Invalidasi cache konten publik setiap kali konten CMS berubah.
-        foreach ([\App\Models\Page::class, \App\Models\Product::class, \App\Models\ProductCategory::class,
-            \App\Models\ProductSpecification::class, \App\Models\ProductFaq::class, \App\Models\ProductGallery::class,
-            \App\Models\NavigationMenu::class, \App\Models\NavigationMenuItem::class, \App\Models\IndustrySolution::class,
-            \App\Models\Banner::class, \App\Models\Promotion::class, \App\Models\Testimonial::class, \App\Models\CaseStudy::class,
-            \App\Models\Partner::class, \App\Models\Statistic::class, \App\Models\Faq::class, \App\Models\MediaAsset::class,
-            \App\Models\GlobalSetting::class, \App\Models\Campaign::class] as $model) {
+        foreach ([Page::class, Product::class, ProductCategory::class,
+            ProductSpecification::class, ProductFaq::class, ProductGallery::class,
+            NavigationMenu::class, NavigationMenuItem::class, IndustrySolution::class,
+            Banner::class, Promotion::class, Testimonial::class, CaseStudy::class,
+            Partner::class, Statistic::class, Faq::class, MediaAsset::class,
+            GlobalSetting::class, Campaign::class] as $model) {
             $model::saved(fn () => CmsCache::bump());
             $model::deleted(fn () => CmsCache::bump());
         }

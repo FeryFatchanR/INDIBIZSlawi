@@ -7,6 +7,7 @@ use App\Enums\PageType;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Support\SeoData;
+use App\Support\SettingsRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -38,7 +39,7 @@ class PageController extends Controller
     private function renderPage(Page $page, bool $isHome = false): View
     {
         $meta = $page->publishedRevision->snapshot['page'] ?? [];
-        $title = $meta['meta_title'] ?? null ?: ($isHome ? (string) app(\App\Support\SettingsRepository::class)->get('general.site_name') : ($meta['title'] ?? $page->title));
+        $title = $meta['meta_title'] ?? null ?: ($isHome ? (string) app(SettingsRepository::class)->get('general.site_name') : ($meta['title'] ?? $page->title));
 
         $seo = SeoData::make($title, $meta['meta_description'] ?? null, $page->ogImage);
         $seo->noindex = (bool) ($meta['noindex'] ?? $page->noindex);

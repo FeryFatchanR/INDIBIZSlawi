@@ -6,6 +6,7 @@ use App\Enums\PageStatus;
 use App\Enums\PageType;
 use App\Models\Page;
 use App\Models\Product;
+use App\Support\Access;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -15,7 +16,7 @@ class ContentStatsOverview extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->can('pages.view') || auth()->user()->can('products.view');
+        return Access::can('pages.view') || Access::can('products.view');
     }
 
     protected function getStats(): array

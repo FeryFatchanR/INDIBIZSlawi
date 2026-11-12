@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasUuid;
 use App\Models\Concerns\LogsActivity;
+use App\Support\MediaUploader;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +27,7 @@ class MediaAsset extends Model
     protected static function booted(): void
     {
         // File fisik dihapus hanya saat force delete (soft delete tetap bisa dipulihkan).
-        static::forceDeleted(fn (self $asset) => app(\App\Support\MediaUploader::class)->deleteFiles($asset));
+        static::forceDeleted(fn (self $asset) => app(MediaUploader::class)->deleteFiles($asset));
     }
 
     public function folder(): BelongsTo

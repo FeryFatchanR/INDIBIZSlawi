@@ -5,8 +5,8 @@ namespace App\Builder\Sections;
 use App\Builder\Contracts\SectionType;
 use App\Builder\Fields;
 use App\Models\Testimonial;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 
 class TestimonialsSection extends SectionType
 {

@@ -10,8 +10,14 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -34,9 +40,9 @@ class FaqResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
-            \Filament\Forms\Components\TextInput::make('question')->label('Pertanyaan')->required()->maxLength(255)->columnSpanFull(),
-            \Filament\Forms\Components\Textarea::make('answer')->label('Jawaban')->required()->maxLength(3000)->rows(4)->columnSpanFull(),
-            \Filament\Forms\Components\TextInput::make('group')->label('Grup')->default('general')->required()->maxLength(60)->alphaDash()->helperText('Dipakai section FAQ untuk memilih kumpulan pertanyaan.'),
+            TextInput::make('question')->label('Pertanyaan')->required()->maxLength(255)->columnSpanFull(),
+            Textarea::make('answer')->label('Jawaban')->required()->maxLength(3000)->rows(4)->columnSpanFull(),
+            TextInput::make('group')->label('Grup')->default('general')->required()->maxLength(60)->alphaDash()->helperText('Dipakai section FAQ untuk memilih kumpulan pertanyaan.'),
             FormFields::visible(),
         ]);
     }
@@ -45,13 +51,13 @@ class FaqResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('question')->label('Pertanyaan')->searchable()->limit(70),
-                \Filament\Tables\Columns\TextColumn::make('group')->label('Grup')->badge(),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('question')->label('Pertanyaan')->searchable()->limit(70),
+                TextColumn::make('group')->label('Grup')->badge(),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('group')->label('Grup')->options(fn () => \App\Models\Faq::query()->distinct()->pluck('group', 'group')),
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                SelectFilter::make('group')->label('Grup')->options(fn () => Faq::query()->distinct()->pluck('group', 'group')),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

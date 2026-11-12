@@ -4,6 +4,7 @@ namespace App\Filament\Resources\MediaAssets;
 
 use App\Filament\Resources\MediaAssets\Pages\ManageMediaAssets;
 use App\Models\MediaAsset;
+use App\Support\Access;
 use App\Support\MediaUploader;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -106,7 +107,7 @@ class MediaAssetResource extends Resource
             ->recordActions([
                 Action::make('open')->label('Buka')->icon('heroicon-o-eye')->url(fn (MediaAsset $r) => $r->url(), shouldOpenInNewTab: true),
                 Action::make('replace')->label('Ganti file')->icon('heroicon-o-arrow-path')
-                    ->authorize(fn (MediaAsset $record) => auth()->user()->can('update', $record))
+                    ->authorize(fn (MediaAsset $record) => Access::can('update', $record))
                     ->schema([self::uploadField()])
                     ->action(function (MediaAsset $record, array $data) {
                         self::processUpload($data, $record);
@@ -124,7 +125,7 @@ class MediaAssetResource extends Resource
             ->toolbarActions([
                 BulkAction::make('delete_unused')->label('Hapus yang tidak dipakai')->icon('heroicon-o-trash')->color('danger')
                     ->requiresConfirmation()
-                    ->authorize(fn () => auth()->user()->can('media.delete'))
+                    ->authorize(fn () => Access::can('media.delete'))
                     ->action(function (Collection $records) {
                         $deleted = 0;
                         foreach ($records as $record) {

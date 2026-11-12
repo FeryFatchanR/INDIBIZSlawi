@@ -8,8 +8,8 @@ use App\Builder\Style\StyleTokens;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 
 class ProductCardsSection extends SectionType
 {

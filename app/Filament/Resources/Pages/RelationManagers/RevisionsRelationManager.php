@@ -6,6 +6,7 @@ use App\Actions\Cms\RestoreRevision;
 use App\Enums\RevisionKind;
 use App\Exceptions\StaleDraftException;
 use App\Models\PageRevision;
+use App\Support\Access;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -35,7 +36,9 @@ class RevisionsRelationManager extends RelationManager
                 TextColumn::make('version')->label('#')->sortable(),
                 TextColumn::make('kind')->label('Jenis')->badge()
                     ->formatStateUsing(fn (RevisionKind $state) => $state->label())
-                    ->color(fn (RevisionKind $state) => match ($state) { RevisionKind::Publish => 'success', RevisionKind::Restore => 'warning', default => 'gray' }),
+                    ->color(fn (RevisionKind $state) => match ($state) {
+                        RevisionKind::Publish => 'success', RevisionKind::Restore => 'warning', default => 'gray'
+                    }),
                 TextColumn::make('live')->label('')->state(fn (PageRevision $r) => $r->id === $page->published_revision_id ? 'Sedang tayang' : null)->badge()->color('success'),
                 TextColumn::make('note')->label('Catatan')->limit(50),
                 TextColumn::make('author.name')->label('Oleh'),
@@ -49,7 +52,7 @@ class RevisionsRelationManager extends RelationManager
                 Action::make('restore')->label('Pulihkan ke draft')->icon('heroicon-o-arrow-uturn-left')->color('warning')
                     ->requiresConfirmation()
                     ->modalDescription('Isi revision ini akan menggantikan DRAFT. Versi publik tidak berubah sampai Anda publish ulang.')
-                    ->visible(fn () => auth()->user()->can('restoreRevision', $page))
+                    ->visible(fn () => Access::can('restoreRevision', $page))
                     ->action(function (PageRevision $record) use ($page) {
                         try {
                             app(RestoreRevision::class)->execute($page, $record, null, auth()->user());

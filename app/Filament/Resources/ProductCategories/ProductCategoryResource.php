@@ -10,8 +10,12 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -36,7 +40,7 @@ class ProductCategoryResource extends Resource
         return $schema->columns(2)->components([
             FormFields::titleWithSlug('name', 'Nama kategori', 120),
             FormFields::slug('product_categories', 140),
-            \Filament\Forms\Components\Textarea::make('description')->label('Deskripsi')->maxLength(1000)->rows(2)->columnSpanFull(),
+            Textarea::make('description')->label('Deskripsi')->maxLength(1000)->rows(2)->columnSpanFull(),
             FormFields::visible(),
         ]);
     }
@@ -45,12 +49,12 @@ class ProductCategoryResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('products_count')->label('Produk')->counts('products'),
-                \Filament\Tables\Columns\ToggleColumn::make('is_visible')->label('Tampil'),
+                TextColumn::make('name')->label('Nama')->searchable(),
+                TextColumn::make('products_count')->label('Produk')->counts('products'),
+                ToggleColumn::make('is_visible')->label('Tampil'),
             ])
             ->filters([
-                \Filament\Tables\Filters\TernaryFilter::make('is_visible')->label('Tampil'),
+                TernaryFilter::make('is_visible')->label('Tampil'),
             ])
             ->reorderable('sort_order')
             ->defaultSort('sort_order')

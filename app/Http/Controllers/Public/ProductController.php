@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Support\SeoData;
+use App\Support\SettingsRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 
@@ -42,7 +43,7 @@ class ProductController extends Controller
                 'name' => $product->name,
                 'description' => Str::limit(strip_tags((string) ($product->short_description ?: $product->description)), 300),
                 'serviceType' => 'Internet & Network Service',
-                'provider' => ['@type' => 'Organization', 'name' => app(\App\Support\SettingsRepository::class)->get('general.site_name'), 'url' => url('/')],
+                'provider' => ['@type' => 'Organization', 'name' => app(SettingsRepository::class)->get('general.site_name'), 'url' => url('/')],
                 'image' => $product->featuredImage?->url(1440),
                 'url' => $product->publicUrl(),
             ]));

@@ -7,6 +7,7 @@ use App\Builder\Style\StyleTokens;
 use App\Filament\Support\FormFields;
 use App\Models\ActivityLog;
 use App\Models\GlobalSetting;
+use App\Support\Access;
 use App\Support\MediaUsageTracker;
 use App\Support\SettingsRepository;
 use BackedEnum;
@@ -116,7 +117,7 @@ class WebsiteSettings extends Page
                     TextInput::make('analytics.gtm_id')->label('Google Tag Manager ID')->regex('/^GTM-[A-Z0-9]{4,10}$/')->placeholder('GTM-XXXXXXX'),
                 ]),
                 Tab::make('Custom Scripts')->icon('heroicon-o-code-bracket')
-                    ->visible(fn () => auth()->user()->can('settings.custom_scripts'))
+                    ->visible(fn () => Access::can('settings.custom_scripts'))
                     ->schema([
                         Callout::make('Risiko keamanan')->warning()
                             ->description('Script di sini dijalankan di setiap halaman publik tanpa sanitasi. Hanya tempel kode dari sumber tepercaya. Setiap perubahan tercatat di Activity Log.'),
@@ -134,7 +135,7 @@ class WebsiteSettings extends Page
         $settings = app(SettingsRepository::class);
 
         foreach (self::GROUPS as $group) {
-            if ($group === 'scripts' && ! auth()->user()->can('settings.custom_scripts')) {
+            if ($group === 'scripts' && ! Access::can('settings.custom_scripts')) {
                 continue; // tanpa izin khusus, script tidak pernah ditulis walau payload dimanipulasi
             }
             if (isset($state[$group]) && is_array($state[$group])) {

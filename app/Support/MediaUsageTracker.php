@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Builder\SectionRegistry;
+use App\Models\MediaAsset;
 use App\Models\MediaUsage;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,7 @@ final class MediaUsageTracker
         }
 
         if ($rows !== []) {
-            $existing = \App\Models\MediaAsset::withTrashed()->whereIn('id', array_column($rows, 'media_asset_id'))->pluck('id')->all();
+            $existing = MediaAsset::withTrashed()->whereIn('id', array_column($rows, 'media_asset_id'))->pluck('id')->all();
             $rows = array_values(array_filter($rows, fn ($r) => in_array($r['media_asset_id'], $existing, true)));
             MediaUsage::query()->insertOrIgnore($rows);
         }

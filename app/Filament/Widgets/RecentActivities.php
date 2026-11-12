@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\ActivityLog;
+use App\Support\Access;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -17,7 +18,7 @@ class RecentActivities extends TableWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->can('activity.view');
+        return Access::can('activity.view');
     }
 
     public function table(Table $table): Table

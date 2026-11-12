@@ -2,6 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+
 /** Item anak mengikuti hak ubah resource induknya. */
 class ProductGalleryPolicy extends ResourcePolicy
 {
@@ -10,17 +13,17 @@ class ProductGalleryPolicy extends ResourcePolicy
         return 'products';
     }
 
-    public function create(\App\Models\User $user): bool
+    public function create(User $user): bool
     {
         return $user->can('products.update');
     }
 
-    public function delete(\App\Models\User $user, \Illuminate\Database\Eloquent\Model $model): bool
+    public function delete(User $user, Model $model): bool
     {
         return $user->can('products.update');
     }
 
-    public function deleteAny(\App\Models\User $user): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('products.update');
     }

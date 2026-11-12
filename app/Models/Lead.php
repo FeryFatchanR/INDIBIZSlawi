@@ -58,8 +58,11 @@ class Lead extends Model
     }
 
     /** Batasi query sesuai hak akses: user tanpa leads.view_all hanya melihat lead miliknya. */
-    public function scopeVisibleTo(Builder $query, User $user): Builder
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
+        if ($user === null) {
+            return $query->whereRaw('1 = 0'); // default aman: tanpa user, tidak ada data
+        }
         if ($user->can('leads.view_all')) {
             return $query;
         }

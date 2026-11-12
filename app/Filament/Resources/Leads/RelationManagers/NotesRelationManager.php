@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Leads\RelationManagers;
 
 use App\Actions\Crm\AddLeadNote;
+use App\Support\Access;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -31,7 +32,7 @@ class NotesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add')->label('Tambah catatan')->icon('heroicon-o-plus')
-                    ->authorize(fn () => auth()->user()->can('addNote', $this->getOwnerRecord()))
+                    ->authorize(fn () => Access::can('addNote', $this->getOwnerRecord()))
                     ->schema([Textarea::make('body')->label('Catatan')->required()->maxLength(5000)->rows(4)])
                     ->action(fn (array $data) => app(AddLeadNote::class)->execute($this->getOwnerRecord(), auth()->user(), $data['body'])),
             ]);

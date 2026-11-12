@@ -1,16 +1,23 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "feryfatchanr/indibizslawi",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "Website pemasaran ISP B2B dengan CMS dan visual page builder (Laravel 13 + Filament 5).",
+    "keywords": [
+        "laravel",
+        "filament",
+        "cms",
+        "page-builder",
+        "isp"
+    ],
+    "license": "proprietary",
     "require": {
         "php": "^8.3",
         "filament/filament": "^5.11",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "spatie/laravel-permission": "^8.5"
+        "spatie/laravel-permission": "^8.5",
+        "symfony/html-sanitizer": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -1,58 +1,58 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ISP B2B Marketing Website + Visual CMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website pemasaran layanan internet & solusi jaringan untuk pelanggan B2B, dengan **CMS berbasis database**,
+**visual page builder drag-and-drop**, **CRM lead** sederhana, dan **RBAC**.
 
-## About Laravel
+| Komponen | Versi |
+|---|---|
+| PHP | 8.3+ |
+| Laravel | 13.x |
+| Filament (admin `/admin`) | 5.x (Livewire 4) |
+| Spatie Laravel Permission | 8.x |
+| Database | MySQL 8 / MariaDB 10.6+ (SQLite untuk test) |
+| Frontend | Blade + Tailwind CSS 4 + Alpine.js, SortableJS (builder) |
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur utama
+- **Website publik**: homepage & halaman perusahaan dari builder, `/layanan` + `/layanan/{slug}` (produk dinamis),
+  `/solusi/{slug}`, `/studi-kasus/{slug}`, form konsultasi/RFQ, tombol WhatsApp terlacak, SEO (meta, OG, JSON-LD,
+  sitemap.xml, robots.txt, breadcrumb), responsif 375–1920 px.
+- **Visual Page Builder** (`Pages → Builder`): library 23 komponen, struktur halaman drag-and-drop (plus tombol & Alt+↑/↓),
+  canvas live dengan preview Desktop/Tablet/Mobile, property editor per komponen (konten, desain, responsif, visibilitas),
+  inline edit teks, draft otomatis, preview, publish/unpublish, riwayat revisi & restore, optimistic locking.
+- **CMS**: produk (+spesifikasi, galeri, FAQ, kategori), kampanye, banner, promosi, testimoni, studi kasus, solusi
+  industri, mitra, statistik, FAQ, media library aman, menu navigasi, global sections, website settings (branding, kontak,
+  header/announcement, footer, SEO, analytics, custom script berizin khusus).
+- **CRM**: lead dari form/WhatsApp/manual, status pipeline (New → Won/Lost), assign sales, catatan & riwayat follow-up,
+  export Excel/CSV, laporan konversi, notifikasi.
+- **Keamanan**: policy per resource, scoping lead per sales (anti-IDOR), sanitasi HTML allowlist, whitelist nilai desain,
+  upload tervalidasi isi file, rate limit + honeypot, audit log, security headers.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+## Mulai cepat (development)
 ```bash
-composer require laravel/boost --dev
+composer install
+npm ci && npm run build
+cp .env.example .env && php artisan key:generate
+# isi DB_* (atau DB_CONNECTION=sqlite untuk percobaan lokal)
+php artisan migrate --seed
+php artisan storage:link
+php artisan app:create-super-admin
+php artisan serve
+```
+Buka `http://localhost:8000` (website) dan `http://localhost:8000/admin` (CMS).
+Seeder **tidak** membuat akun berpassword bawaan dan mengisi kontak dengan placeholder `<...>` — ganti di
+**Website Settings**.
 
-php artisan boost:install
+## Test
+```bash
+php artisan test          # 122 test (SQLite in-memory)
+vendor/bin/pint --test    # code style
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Dokumentasi
+- [Instalasi](docs/INSTALLATION.md)
+- [Deployment produksi](docs/DEPLOYMENT.md)
+- [Backup, restore & rollback](docs/BACKUP_ROLLBACK.md)
+- [Arsitektur & skema komponen builder](docs/ARCHITECTURE.md)
+- [Checklist keamanan](docs/SECURITY_CHECKLIST.md)
+- [Panduan admin](docs/ADMIN_GUIDE.md)
+- [Known limitations](docs/KNOWN_LIMITATIONS.md)
