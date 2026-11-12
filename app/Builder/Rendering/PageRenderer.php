@@ -17,11 +17,23 @@ use Throwable;
  */
 class PageRenderer
 {
+    private const PLACEHOLDER = '<!--cms-dynamic:%s-->';
+
     private int $globalDepth = 0;
+
+    /**
+     * Section dinamis yang ditunda saat merender versi cache (uuid => section). null = mode normal.
+     *
+     * @var array<string, array<string, mixed>>|null
+     */
+    private ?array $deferred = null;
 
     public function __construct(private readonly SectionRegistry $registry) {}
 
-    /** Render versi published (di-cache per revision). */
+    /**
+     * Render versi published. Bagian statis di-cache per revision; section dinamis (mis. form lead dengan token
+     * CSRF, token waktu anti-bot, pesan sukses/error) disimpan sebagai placeholder lalu dirender ulang per request.
+     */
     public function renderPublished(Page $page): string
     {
         $revision = $page->publishedRevision;
@@ -29,10 +41,34 @@ class PageRenderer
             return '';
         }
 
-        return CmsCache::remember(
-            "page:{$page->id}:rev:{$revision->id}",
-            fn () => $this->render($revision->sections())
-        );
+        $cached = CmsCache::remember("page:{$page->id}:rev:{$revision->id}:v2", function () use ($revision) {
+            $this->deferred = [];
+            try {
+                $html = $this->render($revision->sections());
+
+                return ['html' => $html, 'deferred' => $this->deferred];
+            } finally {
+                $this->deferred = null;
+            }
+        });
+
+        return $this->fillDynamic((string) ($cached['html'] ?? ''), (array) ($cached['deferred'] ?? []));
+    }
+
+    /** Ganti placeholder dengan hasil render section dinamis untuk request saat ini. */
+    private function fillDynamic(string $html, array $deferred): string
+    {
+        if ($deferred === []) {
+            return $html;
+        }
+
+        $media = $this->loadMedia(collect($deferred));
+        $replacements = [];
+        foreach ($deferred as $uuid => $section) {
+            $replacements[sprintf(self::PLACEHOLDER, $uuid)] = $this->renderSection($section, $media);
+        }
+
+        return strtr($html, $replacements);
     }
 
     /**
@@ -68,6 +104,13 @@ class PageRenderer
         }
 
         $type = $this->registry->get($typeKey);
+
+        if ($this->deferred !== null && ! $editor && $type->isDynamic() && isset($section['uuid'])) {
+            $this->deferred[$section['uuid']] = $section;
+
+            return sprintf(self::PLACEHOLDER, $section['uuid']);
+        }
+
         $content = $section['content'] ?? [];
         $design = array_merge($type->defaults()['design'], $section['design'] ?? []);
         $responsive = $section['responsive'] ?? [];

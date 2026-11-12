@@ -4,7 +4,11 @@
 --}}
 @php
     $formType = in_array($formType ?? 'contact', ['contact', 'rfq', 'consultation'], true) ? $formType : 'contact';
-    $selectedProduct = old('product_id', $selectedProductId ?? (isset($products) ? optional($products->firstWhere('slug', request('produk')))->id : null));
+    // Produk hanya terpilih bila memang dikirim (?produk=slug) atau ditentukan halaman produk.
+    $productFromQuery = (request()->filled('produk') && isset($products))
+        ? $products->firstWhere('slug', (string) request('produk'))?->id
+        : null;
+    $selectedProduct = old('product_id', $selectedProductId ?? $productFromQuery);
     $disabled = $editor ?? false;
 @endphp
 <div id="lead-form">
@@ -17,7 +21,7 @@
         <form method="POST" action="{{ route('leads.store') }}" class="grid gap-4 sm:grid-cols-2" novalidate>
             @csrf
             <input type="hidden" name="type" value="{{ $formType }}">
-            <input type="hidden" name="_ts" value="{{ \Illuminate\Support\Facades\Crypt::encryptString((string) time()) }}">
+            <input type="hidden" name="_ts" value="{{ \Illuminate\Support\Facades\Crypt::encryptString((string) now()->timestamp) }}">
             <div class="hidden" aria-hidden="true">
                 <label for="lead-website-{{ $formId ?? 'f' }}">Website</label>
                 <input type="text" id="lead-website-{{ $formId ?? 'f' }}" name="website" tabindex="-1" autocomplete="off">

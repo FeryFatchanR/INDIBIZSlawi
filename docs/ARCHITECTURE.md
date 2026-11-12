@@ -58,7 +58,7 @@ JSON hanya untuk konfigurasi fleksibel (`content`/`design`/`responsive` section,
 Setiap `SectionType` mendefinisikan: `key`, `label`, `category`, `icon`, `view()` (nama Blade **hard-coded**),
 `contentRules()` (validasi Laravel), `designRules()`, `contentFields()/designFields()` (form property editor),
 `richTextFields()` (disanitasi), `mediaFields()` (eager load & pelacakan), `prepare()` (query data dinamis),
-`permission()` (mis. `custom_html` → `builder.custom_html`).
+`permission()` (mis. `custom_html` → `builder.custom_html`), `isDynamic()` (section yang tidak boleh ikut di-cache).
 
 Tipe tersedia: hero, banner, heading, rich_text, image, gallery, video, product_cards, pricing_cards, features,
 statistics, testimonials, logo_carousel, industry_solutions, case_studies, faq, contact_form, cta, map, spacer,
@@ -78,5 +78,6 @@ divider, global_section, custom_html.
 | Kelas desain dari whitelist `StyleTokens` | tidak ada CSS mentah dari pengguna; warna kustom hanya hex tervalidasi |
 | Sanitasi saat simpan **dan** saat render | pertahanan berlapis bila data diubah di luar aplikasi |
 | Cache berversi (`CmsCache`) | invalidasi menyeluruh tanpa cache tags (kompatibel driver database/file) |
+| Section dinamis (`SectionType::isDynamic()`, mis. Contact Form) disimpan sebagai placeholder di cache dan dirender per request | token CSRF, token waktu anti-bot, dan pesan sukses/error tidak boleh dibagi antar pengunjung |
 | Gate::before Super Admin hanya untuk permission `x.y` | invarian policy (super admin terakhir, homepage, media terpakai) tetap berlaku untuk semua |
 | Tanpa package activity-log/medialibrary | mengurangi dependensi; kebutuhan audit & media dipenuhi tabel sendiri |

@@ -64,7 +64,7 @@ class LeadController extends Controller
             return true;
         }
 
-        $elapsed = time() - $renderedAt;
+        $elapsed = now()->timestamp - $renderedAt;
 
         return $elapsed < (int) config('cms.leads.min_fill_seconds', 3) || $elapsed > 86400;
     }

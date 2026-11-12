@@ -51,6 +51,15 @@ abstract class SectionType
         return null;
     }
 
+    /**
+     * true bila isi section bergantung pada request/sesi (token CSRF, flash, error validasi). Section seperti ini
+     * tidak pernah ikut di-cache bersama HTML halaman, tetapi dirender ulang di setiap request.
+     */
+    public function isDynamic(): bool
+    {
+        return false;
+    }
+
     public function supportsColumns(): bool
     {
         return false;

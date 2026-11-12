@@ -35,6 +35,12 @@ class ContactFormSection extends SectionType
         return 'builder.contact-form';
     }
 
+    /** Form memuat token CSRF, token waktu anti-bot, dan pesan sukses/error per pengunjung. */
+    public function isDynamic(): bool
+    {
+        return true;
+    }
+
     public function defaultContent(): array
     {
         return ['heading' => 'Konsultasikan Kebutuhan Jaringan Anda', 'description' => 'Tim kami akan menghubungi Anda maksimal 1x24 jam kerja.',
@@ -73,7 +79,7 @@ class ContactFormSection extends SectionType
     public function prepare(array $content, array $design): array
     {
         return [
-            'products' => Product::query()->published()->get(['id', 'name']),
+            'products' => Product::query()->published()->get(['id', 'name', 'slug']),
             'industries' => IndustrySolution::query()->visible()->get(['id', 'name']),
         ];
     }
