@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProductStatus;
 use App\Models\Concerns\HasUuid;
 use App\Models\Concerns\LogsActivity;
+use App\Models\Concerns\SanitizesRichText;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, HasUuid, LogsActivity, SoftDeletes;
+    use HasFactory, HasUuid, LogsActivity, SoftDeletes, SanitizesRichText;
+
+    /** @var list<string> */
+    protected array $richTextAttributes = ['description'];
 
     protected $fillable = [
         'name', 'slug', 'icon', 'short_description', 'description', 'featured_image_id', 'bandwidth_label', 'sla',

@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use App\Models\Concerns\LogsActivity;
+use App\Models\Concerns\SanitizesRichText;
 use App\Models\Concerns\Orderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CaseStudy extends Model
 {
-    use LogsActivity, Orderable;
+    use LogsActivity, Orderable, SanitizesRichText;
+
+    /** @var list<string> */
+    protected array $richTextAttributes = ['challenge', 'solution', 'result'];
 
     protected $fillable = ['title', 'slug', 'client_name', 'industry_solution_id', 'summary', 'challenge', 'solution', 'result', 'image_id', 'meta_title', 'meta_description', 'sort_order', 'is_visible'];
 

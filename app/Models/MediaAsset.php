@@ -23,6 +23,12 @@ class MediaAsset extends Model
         return ['variants' => 'array', 'size' => 'integer', 'width' => 'integer', 'height' => 'integer'];
     }
 
+    protected static function booted(): void
+    {
+        // File fisik dihapus hanya saat force delete (soft delete tetap bisa dipulihkan).
+        static::forceDeleted(fn (self $asset) => app(\App\Support\MediaUploader::class)->deleteFiles($asset));
+    }
+
     public function folder(): BelongsTo
     {
         return $this->belongsTo(MediaFolder::class, 'folder_id');
