@@ -83,7 +83,7 @@ class PageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $q) => $q->with(['editor', 'publishedRevision']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['editor', 'publishedRevision']))
             ->columns([
                 TextColumn::make('title')->label('Judul')->searchable()->sortable()
                     ->description(fn (Page $r) => $r->isHome() ? '/' : ($r->type === PageType::Global ? 'Global section' : '/'.$r->slug)),

@@ -47,6 +47,10 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Sistem')->collapsed(),
             ])
             ->navigationItems([
+                NavigationItem::make('Global Sections')
+                    ->url(fn (): string => \App\Filament\Resources\Pages\PageResource::getUrl('index', ['filters' => ['type' => ['value' => 'global']]]))
+                    ->icon(Heroicon::OutlinedSquare3Stack3d)->group('Website')->sort(2)
+                    ->visible(fn (): bool => auth()->user()?->can('pages.view') ?? false),
                 NavigationItem::make('Lihat Website')
                     ->url(fn (): string => url('/'), shouldOpenInNewTab: true)
                     ->icon(Heroicon::OutlinedGlobeAlt)

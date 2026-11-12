@@ -99,7 +99,7 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $q) => $q->with('categories'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('categories'))
             ->columns([
                 TextColumn::make('name')->label('Nama')->searchable()->sortable(),
                 TextColumn::make('categories.name')->label('Kategori')->badge(),

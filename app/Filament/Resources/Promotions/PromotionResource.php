@@ -48,7 +48,7 @@ class PromotionResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($q) => $q->with('product'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with('product'))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('title')->label('Judul')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('product.name')->label('Produk'),

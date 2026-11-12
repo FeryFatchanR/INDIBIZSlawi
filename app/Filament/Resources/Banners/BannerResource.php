@@ -49,7 +49,7 @@ class BannerResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($q) => $q->with('campaign'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with('campaign'))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('title')->label('Judul')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('placement')->label('Placement')->badge(),

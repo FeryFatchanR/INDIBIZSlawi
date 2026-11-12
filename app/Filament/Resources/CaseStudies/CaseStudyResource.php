@@ -50,7 +50,7 @@ class CaseStudyResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($q) => $q->with('industrySolution'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with('industrySolution'))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('title')->label('Judul')->searchable()->limit(50),
                 \Filament\Tables\Columns\TextColumn::make('client_name')->label('Klien')->searchable(),

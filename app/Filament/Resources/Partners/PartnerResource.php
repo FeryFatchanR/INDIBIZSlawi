@@ -43,7 +43,7 @@ class PartnerResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($q) => $q->with('logo'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with('logo'))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('url')->label('Website')->limit(40),

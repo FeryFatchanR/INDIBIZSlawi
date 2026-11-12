@@ -33,7 +33,7 @@ class GalleriesRelationManager extends RelationManager
         $sync = fn () => ProductResource::syncMediaUsage($this->getOwnerRecord());
 
         return $table
-            ->modifyQueryUsing(fn ($q) => $q->with('media'))
+            ->modifyQueryUsing(fn ($query) => $query->with('media'))
             ->columns([
                 ImageColumn::make('thumbnail')->label('Gambar')->state(fn ($record) => $record->media?->url(480)),
                 TextColumn::make('caption')->label('Keterangan'),

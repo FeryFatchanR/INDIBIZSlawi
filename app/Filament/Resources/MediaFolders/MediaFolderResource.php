@@ -41,7 +41,7 @@ class MediaFolderResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($q) => $q->with('parent'))
+        return $table->modifyQueryUsing(fn ($query) => $query->with('parent'))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('parent.name')->label('Induk'),

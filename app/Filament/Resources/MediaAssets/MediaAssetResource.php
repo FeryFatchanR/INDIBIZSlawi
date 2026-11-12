@@ -84,7 +84,7 @@ class MediaAssetResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $q) => $q->with('folder')->withCount('usages'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('folder')->withCount('usages'))
             ->columns([
                 ImageColumn::make('preview')->label('')->state(fn (MediaAsset $r) => $r->isImage() ? $r->url(480) : null)
                     ->imageHeight(48),
@@ -101,7 +101,7 @@ class MediaAssetResource extends Resource
             ->filters([
                 SelectFilter::make('kind')->label('Jenis')->options(['image' => 'Gambar', 'video' => 'Video', 'document' => 'Dokumen']),
                 SelectFilter::make('folder_id')->label('Folder')->relationship('folder', 'name'),
-                Filter::make('unused')->label('Tidak dipakai')->query(fn (Builder $q) => $q->doesntHave('usages')),
+                Filter::make('unused')->label('Tidak dipakai')->query(fn (Builder $query) => $query->doesntHave('usages')),
             ])
             ->recordActions([
                 Action::make('open')->label('Buka')->icon('heroicon-o-eye')->url(fn (MediaAsset $r) => $r->url(), shouldOpenInNewTab: true),

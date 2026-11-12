@@ -30,7 +30,7 @@ class RevisionsRelationManager extends RelationManager
         $page = $this->getOwnerRecord();
 
         return $table
-            ->modifyQueryUsing(fn ($q) => $q->with('author'))
+            ->modifyQueryUsing(fn ($query) => $query->with('author'))
             ->columns([
                 TextColumn::make('version')->label('#')->sortable(),
                 TextColumn::make('kind')->label('Jenis')->badge()
